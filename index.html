@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>pdf-iframe</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+
+<body>
+
+    <h1>iframe+src</h1>
+    <iframe id="iframe" src="./sample.pdf"></iframe>
+
+
+    <h1>iframe+blob</h1>
+    <iframe id="blob"></iframe>
+
+    <script>
+        const PDF_URL = './sample.pdf'; // 指定された取得元 URL
+        const iframe = document.getElementById('iframe');
+
+        let currentObjectUrl = null;
+
+        async function loadPdf() {
+            try {
+                const resp = await fetch(PDF_URL, { cache: 'no-store' });
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+
+                const blob = await resp.blob();
+
+
+                if (currentObjectUrl) {
+                    URL.revokeObjectURL(currentObjectUrl);
+                    currentObjectUrl = null;
+                }
+
+
+                const objectUrl = URL.createObjectURL(blob);
+                currentObjectUrl = objectUrl;
+                iframe.src = objectUrl;
+
+            } catch (err) {
+                console.error(err);
+            } finally {
+                if (currentObjectUrl) {
+                    URL.revokeObjectURL(currentObjectUrl);
+                    currentObjectUrl = null;
+                }
+            }
+        }
+        loadPdf();
+
+    </script>
+
+
+
+</body>
+
+</html>
